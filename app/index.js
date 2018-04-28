@@ -26,7 +26,7 @@ module.exports = class extends Generator {
         );
     }
 
-    async prompts() {
+    async prompting() {
         this.log(
             chalk.blue.bold('Koa & TypeScript Web Application Generator')
             + ' - v' + pkgInfo.version + '\n'
@@ -39,11 +39,25 @@ module.exports = class extends Generator {
                 type: 'input',
                 name: 'name',
                 message : 'Project Name',
-                default : this.appname
+                default : this.appname,
+                validate(input, answers) {
+                    return input.trim() != ''; 
+                }
             }
         ])
 
+        this.projectName = answers.name
         this.log('Projet Name: ' + answers.name);
+    }
+
+    writing() {
+        this.fs.copyTpl(
+            this.templatePath('package.json'),
+            this.destinationPath('package.json'),
+            {
+                projectName: this.projectName
+            }
+        );
     }
 
 };
