@@ -3,6 +3,8 @@ const path = require('path');
 const chalk = require('chalk');
 const pkgInfo = require('../package.json');
 
+const GENERATOR_TITLE = chalk.blue.bold('Koa & TypeScript Web Application Generator');
+
 module.exports = class extends Generator {
 
     constructor(args, opts) {
@@ -28,8 +30,7 @@ module.exports = class extends Generator {
 
     async prompting() {
         this.log(
-            chalk.blue.bold('Koa & TypeScript Web Application Generator')
-            + ' - v' + pkgInfo.version + '\n'
+            '\n' + GENERATOR_TITLE + ' - v' + pkgInfo.version + '\n'
         );
 
         this._log_property('Project Path', this.destinationRoot() + '\n');
@@ -43,17 +44,10 @@ module.exports = class extends Generator {
                 validate(input, answers) {
                     return input.trim() != ''; 
                 }
-            },
-            {
-                type: 'input',
-                name: 'description',
-                message: 'Description',
-                default: ''
             }
         ])
 
         this.packageName = answers.name
-        this.packageDescription = answers.description
     }
 
     async writing() {
@@ -76,22 +70,14 @@ module.exports = class extends Generator {
             "typescript": "2.8.3"
         }
 
-        const KOA_STATIC_DEPENDENCIES = {
-            "koa-mount": "3.0.0",
-            "koa-static": "4.0.2",
-        };
-        const KOA_STATIC_DEVDEPENDENCIES = {
-            "@types/koa-mount": "3.0.1",
-            "@types/koa-static": "4.0.0",
-        }
-
         this.fs.writeJSON('package.json', {
             name: this.packageName,
             version: '1.0.0',
-            description: this.packageDescription,
+            description: '',
             scripts: {
                 "build-server": "tslint -p . && tsc",
                 "watch-server": "cross-env NODE_ENV=development nodemon --watch 'src/**/*' -e ts --exec 'ts-node' src/server/server.ts",
+                "start": "node dist/server/server.js"
             },
             dependencies: {
                 ...KOA_BASE_DEPENDENCIES
@@ -109,11 +95,17 @@ module.exports = class extends Generator {
         copyFile('npmrc', '.npmrc');
         copyFile('tsconfig.json');
         copyFile('src/server/config.ts');
+        copyFile('src/server/routes.ts');
         copyFile('src/server/server.ts');
 
     }
 
     install() {
-        this.installDependencies({ npm: true, bower: false });
+        this.installDependencies({ npm: true, bower: false })
+        .then(() => {
+            this.log(
+                '\n' + GENERATOR_TITLE + chalk.yellow.bold(' Finished.') + '\n'
+            );
+        });
     }
 };
