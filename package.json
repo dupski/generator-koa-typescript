@@ -10,5 +10,9 @@
   ],
   "dependencies": {
     "yeoman-generator": "^2.0.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EnterpriseJSTutorial/generator-koa-typescript.git"
   }
 }
