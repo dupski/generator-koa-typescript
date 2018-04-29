@@ -1,8 +1,0 @@
-{
-  "name": "<%= projectName %>",
-  "version": "1.0.0",
-  "description": "somedesc",
-  "dependencies": {
-    "yeoman-generator": "^2.0.4"
-  }
-}

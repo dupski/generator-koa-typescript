@@ -38,26 +38,82 @@ module.exports = class extends Generator {
             {
                 type: 'input',
                 name: 'name',
-                message : 'Project Name',
-                default : this.appname,
+                message: 'Project Name',
+                default: this.appname,
                 validate(input, answers) {
                     return input.trim() != ''; 
                 }
+            },
+            {
+                type: 'input',
+                name: 'description',
+                message: 'Description',
+                default: ''
             }
         ])
 
-        this.projectName = answers.name
-        this.log('Projet Name: ' + answers.name);
+        this.packageName = answers.name
+        this.packageDescription = answers.description
     }
 
-    writing() {
-        this.fs.copyTpl(
-            this.templatePath('package.json'),
-            this.destinationPath('package.json'),
-            {
-                projectName: this.projectName
+    async writing() {
+
+        const KOA_BASE_DEPENDENCIES = {
+            "koa": "2.5.1",
+            "koa-bodyparser": "4.2.0",
+            "koa-json-log": "1.0.0",
+            "koa-router": "7.4.0"
+        };
+        const KOA_BASE_DEVDEPENDENCIES = {
+            "@types/koa": "2.0.45",
+            "@types/koa-bodyparser": "4.2.0",
+            "@types/koa-router": "7.0.28",
+            "@types/node": "8.10.10",
+            "cross-env": "5.1.4",
+            "nodemon": "1.17.3",
+            "ts-node": "6.0.1",
+            "tslint": "5.9.1",
+            "typescript": "2.8.3"
+        }
+
+        const KOA_STATIC_DEPENDENCIES = {
+            "koa-mount": "3.0.0",
+            "koa-static": "4.0.2",
+        };
+        const KOA_STATIC_DEVDEPENDENCIES = {
+            "@types/koa-mount": "3.0.1",
+            "@types/koa-static": "4.0.0",
+        }
+
+        this.fs.writeJSON('package.json', {
+            name: this.packageName,
+            version: '1.0.0',
+            description: this.packageDescription,
+            scripts: {
+                "build-server": "tslint -p . && tsc",
+                "watch-server": "cross-env NODE_ENV=development nodemon --watch 'src/**/*' -e ts --exec 'ts-node' src/server/server.ts",
+            },
+            dependencies: {
+                ...KOA_BASE_DEPENDENCIES
+            },
+            devDependencies: {
+                ...KOA_BASE_DEVDEPENDENCIES,
             }
-        );
+        }, null, 2);
+
+        const copyFile = (src, dest = src) => {
+            this.fs.copy(this.templatePath(src), this.destinationPath(dest));
+        }
+
+        // Copy files
+        copyFile('npmrc', '.npmrc');
+        copyFile('tsconfig.json');
+        copyFile('src/server/config.ts');
+        copyFile('src/server/server.ts');
+
     }
 
+    install() {
+        this.installDependencies({ npm: true, bower: false });
+    }
 };
