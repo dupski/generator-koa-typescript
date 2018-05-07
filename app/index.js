@@ -47,7 +47,7 @@ module.exports = class extends Generator {
             }
         ])
 
-        this.packageName = answers.name
+        this.packageName = answers.name;
     }
 
     async writing() {
@@ -55,7 +55,7 @@ module.exports = class extends Generator {
         const KOA_BASE_DEPENDENCIES = {
             "koa": "2.5.1",
             "koa-bodyparser": "4.2.0",
-            "koa-json-log": "1.0.0",
+            "koa-json-log": "2.0.2",
             "koa-router": "7.4.0"
         };
         const KOA_BASE_DEVDEPENDENCIES = {
@@ -68,7 +68,7 @@ module.exports = class extends Generator {
             "ts-node": "6.0.1",
             "tslint": "5.9.1",
             "typescript": "2.8.3"
-        }
+        };
 
         this.fs.writeJSON('package.json', {
             name: this.packageName,
@@ -89,7 +89,7 @@ module.exports = class extends Generator {
 
         const copyFile = (src, dest = src) => {
             this.fs.copy(this.templatePath(src), this.destinationPath(dest));
-        }
+        };
 
         // Copy files
         copyFile('npmrc', '.npmrc');

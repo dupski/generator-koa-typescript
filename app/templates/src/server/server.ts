@@ -4,13 +4,13 @@ import * as path from 'path';
 import * as Koa from 'koa';
 import * as KoaBody from 'koa-bodyparser';
 
-import { logger } from 'koa-json-log';
+import { jsonLog } from 'koa-json-log';
 import { config } from './config';
 import { registerRoutes } from './routes';
 
 const app = new Koa();
 
-app.use(logger);
+app.use(jsonLog());
 app.use(KoaBody());
 
 registerRoutes(app);
