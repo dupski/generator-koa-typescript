@@ -5,5 +5,7 @@
         "strict": true,
         "rootDir": "./src",
         "outDir": "./dist",
+        "experimentalDecorators": true,
+        "strictPropertyInitialization": false
     }
 }
